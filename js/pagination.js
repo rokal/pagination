@@ -1,59 +1,57 @@
 var studentsList = $('.student-list'),
-    numberOfStudents, pageSize=10;
+    pageSize = 10,
+    numberOfStudents,
+    filteredStudents;
 
-studentsList.children().each(function(index){
-    $(this).hide();
-});
-// studentsList.empty();
+filteredStudents = studentsList.children();
 
-console.log(studentsList.length);
+displayPage(1);
+
+function hideAll(){
+    studentsList.children().each(function(index){
+        $(this).fadeOut();
+    });
+}
+
+
 function filter(keyword){
     var regex= new RegExp(keyword,'i');
-    var filteredStudents = [];
+    var filtered = [];
     studentsList.children().each(function(index){
         if(regex.test($(this).find('h3').text()) || regex.test($(this).find('span.email').text())){
-            // console.log($(this).find('h3').text()+' '+$(this).find('span.email').text());
             filteredStudents.push($(this));
-            // $(this).fadeIn();
-        }else{
-            // $(this).fadeOut();
         }
-        // console.log(regex.test($(this).find('h3').text()) || regex.test($(this).find('span.email').text()));
-        // console.log($(this).find('h3').text()+' '+$(this).find('span.email').text());
-        
     });
-    return filteredStudents;
+    return filtered;
 }
 
+function displayPage(page){
+    var begin = ((page-1)*pageSize),
+        end = Math.min(page*pageSize, filteredStudents.length)-1;
+    filteredStudents.each(function(index) {
+        if(index >= begin && index <= end){
+            $(this).fadeIn();
+        }else{
+            $(this).fadeOut();
+        }
+    });
 
-// var pat2= new RegExp("(<li.*(</li>)$)");
-/*
-numberOfStudents=studentsList.children();
-console.log(numberOfStudents.length);
-// $.parseHTML($('.student-item')[0]).addClass('show');
-var el = '<li class="student-item cf">'+
-            '<div class="student-details">'+
-                '<img class="avatar" src="https://randomuser.me/api/portraits/thumb/men/75.jpg">'+
-                '<h3>aapo niskanen</h3>'+
-                '<span class="email">aapo.niskanen@example.com</span>'+
-            '</div>'+
-            '<div class="joined-details">'+
-                   '<span class="date">Joined 06/15/12</span>'+
-           '</div>'+
-        '</li>';
-el+=el;
-$.parseHTML(el).addClass('show');
-// console.log( $.parseHTML(el) );
-studentsList.empty();
-var nav = '<div class="pagination">jjjj</div>';
-studentsList.append(nav);
-
-function buildPagination(){
-    var pagination = '',
-        numPage=computeNumOfPages;
-
+    displayPagination(page);
 }
-*/
+
+function displayPagination(activePage){
+    $('.pagination').remove();
+    var pages=computeNumOfPages(filteredStudents.length, pageSize);
+    var nav = '<div class="pagination"><ul>';
+    for(var i = 1; i <= pages; i++){
+        nav += '<li><a href="#"';
+        nav += activePage === i ? ' class="active">' : '>';
+        nav += i + '</a></li>';
+    }
+    nav += '</ul></div>';
+    $('.page').append(nav);
+}
+
 function computeNumOfPages(numElements, numElementsPerPage){
     return Math.ceil(numElements/numElementsPerPage);
 }
