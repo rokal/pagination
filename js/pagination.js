@@ -1,5 +1,5 @@
 var studentsList = $('.student-list'),
-    pageSize = 5,
+    pageSize = 10,
     numberOfStudents,
     filteredStudents;
 
