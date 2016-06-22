@@ -1,5 +1,5 @@
 var studentsList = $('.student-list'),
-    pageSize = 10,
+    pageSize = 5,
     numberOfStudents,
     filteredStudents;
 
@@ -45,7 +45,7 @@ function displayPage(elements,page){
     hideAll();
     elements.each(function(index) {
         if(index >= begin && index <= end){
-            $(this).fadeIn();
+            $(this).slideDown(1000);
         }
     });
 
