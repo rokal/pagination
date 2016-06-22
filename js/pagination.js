@@ -3,36 +3,49 @@ var studentsList = $('.student-list'),
     numberOfStudents,
     filteredStudents;
 
-filteredStudents = studentsList.children();
+initListOfStudents();
+init();
 
-displayPage(1);
+function init(){
+    displaySearchBar();
+    displayPage(filteredStudents,1);
+    $('.student-search button').click(function(){
+        search($('.student-search input').val());
+    });
+
+}
+
+function initListOfStudents() {
+    filteredStudents = $('li.student-item');
+}
+
+function search(keyWords){
+    filteredStudents = filter(keyWords);
+    displayPage(filteredStudents,1);
+}
+
 
 function hideAll(){
-    studentsList.children().each(function(index){
-        $(this).fadeOut();
-    });
+    $('li.student-item').hide();
 }
 
 
-function filter(keyword){
-    var regex= new RegExp(keyword,'i');
-    var filtered = [];
-    studentsList.children().each(function(index){
-        if(regex.test($(this).find('h3').text()) || regex.test($(this).find('span.email').text())){
-            filteredStudents.push($(this));
-        }
-    });
-    return filtered;
+
+function filter(params) {
+    var regex= new RegExp(params,'i');
+    return $('li.student-item')
+        .filter(function(index){
+            return regex.test($(this).find('h3').text()) || regex.test($(this).find('span.email').text());
+        });
 }
 
-function displayPage(page){
+function displayPage(elements,page){
     var begin = ((page-1)*pageSize),
-        end = Math.min(page*pageSize, filteredStudents.length)-1;
-    filteredStudents.each(function(index) {
+        end = Math.min(page*pageSize, elements.length)-1;
+    hideAll();
+    elements.each(function(index) {
         if(index >= begin && index <= end){
             $(this).fadeIn();
-        }else{
-            $(this).fadeOut();
         }
     });
 
@@ -41,15 +54,30 @@ function displayPage(page){
 
 function displayPagination(activePage){
     $('.pagination').remove();
-    var pages=computeNumOfPages(filteredStudents.length, pageSize);
-    var nav = '<div class="pagination"><ul>';
-    for(var i = 1; i <= pages; i++){
-        nav += '<li><a href="#"';
-        nav += activePage === i ? ' class="active">' : '>';
-        nav += i + '</a></li>';
+    var pages = computeNumOfPages(filteredStudents.length, pageSize);
+    if(pages > 1){
+        var nav = '<div class="pagination"><ul>';
+        for(var i = 1; i <= pages; i++){
+            nav += '<li><a href="#"';
+            nav += activePage === i ? ' class="active">' : '>';
+            nav += i + '</a></li>';
+        }
+        nav += '</ul></div>';
+        $('.page').append(nav);
+
+        $('.pagination li a').click(function () {
+            displayPage(filteredStudents,parseInt($(this).text()));
+        });
     }
-    nav += '</ul></div>';
-    $('.page').append(nav);
+}
+
+function displaySearchBar(){
+    var bar = '<div class="student-search">'+
+                '<input placeholder="Search for students...">'+
+                '<button>Search</button>'+
+              '</div>';
+    $('.page-header').append(bar);
+
 }
 
 function computeNumOfPages(numElements, numElementsPerPage){
