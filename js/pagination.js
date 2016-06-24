@@ -27,6 +27,7 @@ function search(keyWords){
 
 function hideAll(){
     $('li.student-item').hide();
+    $('.no_result').remove();
 }
 
 
@@ -43,11 +44,15 @@ function displayPage(elements,page){
     var begin = ((page-1)*pageSize),
         end = Math.min(page*pageSize, elements.length)-1;
     hideAll();
-    elements.each(function(index) {
-        if(index >= begin && index <= end){
-            $(this).slideDown(1000);
-        }
-    });
+    if(elements.length > 0){
+        elements.each(function(index) {
+            if(index >= begin && index <= end){
+                $(this).slideDown(500);
+            }
+        });
+    }else{
+        $('.student-list').after('<p class = "no_result">No result found </p>');
+    }
 
     displayPagination(page);
 }
